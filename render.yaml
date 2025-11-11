@@ -1,0 +1,37 @@
+services:services:
+
+  - type: web  - type: web
+
+    name: tunemate-backend    name: tunemate-backend
+
+    env: node    env: node
+
+    rootDir: backend    plan: free
+
+    plan: free    rootDir: backend2
+
+    buildCommand: npm install && npx prisma generate    buildCommand: npm install
+
+    startCommand: npm start    startCommand: node server.js
+
+    autoDeploy: true    envVars:
+
+    envVars:      - key: PORT
+
+      - key: DATABASE_URL        value: 4000
+
+        sync: false      - key: SUPABASE_JWT_SECRET
+
+      - key: JWT_SECRET        sync: false
+
+        sync: false      - key: DATABASE_URL
+
+      - key: NODE_ENV        sync: false
+
+        value: production      - key: CORS_ORIGIN
+
+      - key: PORT        sync: false
+
+        value: 4000
+      - key: FRONTEND_ORIGIN
+        value: https://your-frontend.vercel.app
