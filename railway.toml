@@ -1,8 +1,0 @@
-[build]
-builder = "NIXPACKS"
-
-[build.nixpacksPlan]
-buildPath = "backend"
-
-[env]
-NODE_VERSION = "20"
