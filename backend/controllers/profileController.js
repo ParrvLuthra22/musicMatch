@@ -3,7 +3,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure Multer Storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -15,7 +14,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage,
-    limits: { fileSize: 5000000 }, // 5MB limit
+    limits: { fileSize: 5000000 },
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|webp/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -29,9 +28,6 @@ const upload = multer({
     }
 }).single('photo');
 
-// @desc    Get current user profile
-// @route   GET /api/profile/me
-// @access  Private
 const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id).select('-passwordHash');
@@ -42,9 +38,6 @@ const getProfile = async (req, res) => {
     }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/profile/update
-// @access  Private
 const updateProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
@@ -59,7 +52,6 @@ const updateProfile = async (req, res) => {
                 user.preferences = { ...user.preferences, ...req.body.preferences };
             }
 
-            // Handle location update if provided
             if (req.body.location) {
                 user.location = {
                     type: 'Point',
@@ -78,9 +70,6 @@ const updateProfile = async (req, res) => {
     }
 };
 
-// @desc    Upload profile photo
-// @route   POST /api/profile/upload-photo
-// @access  Private
 const uploadPhoto = (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
@@ -106,20 +95,15 @@ const uploadPhoto = (req, res) => {
     });
 };
 
-// @desc    Delete profile photo
-// @route   DELETE /api/profile/photo/:filename
-// @access  Private
 const deletePhoto = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
         const filename = req.params.filename;
         const photoUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${filename}`;
 
-        // Remove from DB
         user.photos = user.photos.filter(p => p !== photoUrl);
         await user.save();
 
-        // Remove from filesystem
         const filePath = path.join(__dirname, '../uploads', filename);
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);

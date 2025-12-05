@@ -18,8 +18,8 @@ const matchSchema = new mongoose.Schema({
             id: String
         }],
         sharedGenres: [String],
-        genreCompatibility: Number, // Score for genre overlap
-        audioFeaturesSimilarity: Number // Score for audio features similarity
+        genreCompatibility: Number,
+        audioFeaturesSimilarity: Number
     },
     status: {
         type: String,
@@ -34,7 +34,6 @@ const matchSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for efficient querying of a user's matches
 matchSchema.index({ users: 1, status: 1 });
 
 module.exports = mongoose.model('Match', matchSchema);

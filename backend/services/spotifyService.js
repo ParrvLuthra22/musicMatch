@@ -1,7 +1,6 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-// Helper to refresh access token
 const refreshAccessToken = async (user) => {
     try {
         const params = new URLSearchParams();
@@ -30,7 +29,6 @@ const refreshAccessToken = async (user) => {
     }
 };
 
-// Wrapper for Spotify API requests to handle token expiration
 const makeSpotifyRequest = async (user, method, url, data = null) => {
     try {
         const config = {
@@ -42,7 +40,6 @@ const makeSpotifyRequest = async (user, method, url, data = null) => {
         return await axios(config);
     } catch (error) {
         if (error.response && error.response.status === 401) {
-            // Token expired, refresh and retry
             const newAccessToken = await refreshAccessToken(user);
             const config = {
                 method,
@@ -61,7 +58,6 @@ const syncSpotifyData = async (userId) => {
     if (!user) throw new Error('User not found');
 
     try {
-        // 1. Get Top Artists
         const topArtistsRes = await makeSpotifyRequest(user, 'get', 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=medium_term');
         const topArtists = topArtistsRes.data.items.map(artist => ({
             name: artist.name,
@@ -70,7 +66,6 @@ const syncSpotifyData = async (userId) => {
             image: artist.images[0]?.url
         }));
 
-        // 2. Get Top Tracks
         const topTracksRes = await makeSpotifyRequest(user, 'get', 'https://api.spotify.com/v1/me/top/tracks?limit=20&time_range=medium_term');
         const topTracks = topTracksRes.data.items.map(track => ({
             name: track.name,
@@ -80,7 +75,6 @@ const syncSpotifyData = async (userId) => {
             previewUrl: track.preview_url
         }));
 
-        // 3. Calculate Top Genres from Artists
         const allGenres = topArtists.flatMap(artist => artist.genres);
         const genreCounts = allGenres.reduce((acc, genre) => {
             acc[genre] = (acc[genre] || 0) + 1;
@@ -91,12 +85,10 @@ const syncSpotifyData = async (userId) => {
             .slice(0, 10)
             .map(([genre]) => genre);
 
-        // 4. Get Audio Features for Top Tracks
         const trackIds = topTracks.map(t => t.id).join(',');
         const featuresRes = await makeSpotifyRequest(user, 'get', `https://api.spotify.com/v1/audio-features?ids=${trackIds}`);
         const features = featuresRes.data.audio_features.filter(f => f !== null);
 
-        // Calculate average audio features
         const avgFeatures = features.reduce((acc, curr) => {
             acc.danceability += curr.danceability;
             acc.energy += curr.energy;
@@ -113,7 +105,6 @@ const syncSpotifyData = async (userId) => {
             acousticness: avgFeatures.acousticness / count
         };
 
-        // Update User
         user.topArtists = topArtists;
         user.topTracks = topTracks;
         user.topGenres = topGenres;

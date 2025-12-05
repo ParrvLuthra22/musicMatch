@@ -16,12 +16,6 @@ import SettingsPage from './pages/SettingsPage';
 import EventsPage from './pages/EventsPage';
 import ConversationsPage from './pages/ConversationsPage';
 import ChatPage from './pages/ChatPage';
-// import DashboardPage from './pages/DashboardPage';
-// import MatchesPage from './pages/MatchesPage';
-// ...
-// <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-// <Route path="/matches" element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} />
-// import { User, Home, Settings, MessageCircle } from 'lucide-react'; // Removed as per edit
 
 function App() {
   return (
@@ -36,10 +30,6 @@ function App() {
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                 <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
-                {/* Assuming DashboardPage and MatchesPage exist based on the edit */}
-                {/* <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} /> */}
-                {/* <Route path="/matches" element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} /> */}
-                {/* Original root route, will be superseded by /discover if it's the intended default */}
                 <Route path="/" element={<LandingPage />} />
                 <Route
                   path="/discover"
