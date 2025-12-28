@@ -18,6 +18,7 @@ import ConversationsPage from './pages/ConversationsPage';
 import ChatPage from './pages/ChatPage';
 
 import MobileTopHeader from './components/MobileTopHeader';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -79,9 +80,6 @@ function App() {
           }
         />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        import NotFoundPage from './pages/NotFoundPage';
-
-        // ... (inside Routes)
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Navigation />

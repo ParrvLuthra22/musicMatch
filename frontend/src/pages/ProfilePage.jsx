@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import PhotoUpload from '../components/PhotoUpload';
@@ -13,9 +14,9 @@ import { ProfileSkeleton } from '../components/Skeletons';
 const ProfilePage = () => {
     const { userId } = useParams();
     const { user: currentUser } = useContext(AuthContext);
-    const [profileUser, setProfileUser] = useState(null);
+    const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // For modal submission loading
 
     // Initial preferences state to pass to modal
@@ -28,7 +29,7 @@ const ProfilePage = () => {
             // If it's our own profile, we might already have data in context,
             // but let's simulate a fetch or fetch fresh data if needed
             if (isOwnProfile) {
-                setProfileUser(currentUser);
+                setProfile(currentUser);
                 if (currentUser?.preferences) setPreferences(currentUser.preferences);
                 setLoading(false);
                 return;
@@ -39,7 +40,7 @@ const ProfilePage = () => {
             const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setProfileUser(data);
+            setProfile(data);
             if (data.preferences) setPreferences(data.preferences);
         } catch (error) {
             console.error('Error fetching profile:', error);

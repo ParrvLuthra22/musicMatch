@@ -51,13 +51,17 @@ const DashboardPage = () => {
                 const unreadMessages = Math.floor(Math.random() * 3);
 
                 // Top Genre from user
-                const topGenre = user?.topArtists?.[0]?.genres?.[0] || 'Pop';
+                let topGenre = '-';
+                if (user?.topArtists?.length > 0 && user.topArtists[0].genres?.length > 0) {
+                    const genre = user.topArtists[0].genres[0];
+                    topGenre = genre.charAt(0).toUpperCase() + genre.slice(1);
+                }
 
                 setStats({
                     matchesToday,
                     totalMatches,
                     unreadMessages,
-                    topGenre: topGenre.charAt(0).toUpperCase() + topGenre.slice(1)
+                    topGenre
                 });
 
                 setRecentMatches(matches.slice(0, 5));

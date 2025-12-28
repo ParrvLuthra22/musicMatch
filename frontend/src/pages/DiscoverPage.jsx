@@ -64,35 +64,27 @@ const DiscoverPage = () => {
 
     // Use buttons to trigger swipe programmatically (simulating drag for the logic)
     const handleButtonSwipe = (direction) => {
-        if (matches.length === 0) return;
-        handleSwipe(direction, matches[0]);
+        if (candidates.length === 0) return;
+        handleSwipe(direction, candidates[0]);
     };
 
-    if (loading) {
+    if (loading || !candidates) {
         return (
             <div className="min-h-screen bg-bg-dark flex items-center justify-center text-white">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary shadow-[0_0_15px_rgba(0,255,255,0.5)]"></div>
+                <MatchCardSkeleton />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-bg-dark text-white flex flex-col overflow-hidden relative font-body selection:bg-primary selection:text-black">
+        <div className="min-h-screen bg-bg-dark text-white flex flex-col overflow-hidden relative font-body selection:bg-primary selection:text-black md:ml-64">
+            {/* Note: Added md:ml-64 to account for fixed sidebar */}
             {matchedUser && <MatchModal matchedUser={matchedUser} onClose={() => setMatchedUser(null)} />}
 
-            {/* Top Bar */}
-            <div className="w-full h-16 px-6 flex justify-between items-center z-20 border-b border-white/5 bg-bg-dark/80 backdrop-blur-md fixed top-0 md:pl-[17rem]">
+            {/* Top Bar - Mobile Only mainly, or global controls */}
+            <div className="md:hidden w-full h-16 px-6 flex justify-between items-center z-20 border-b border-white/5 bg-bg-dark/80 backdrop-blur-md fixed top-0">
                 <div className="flex items-center gap-2">
                     <span className="text-xl font-bold font-display tracking-tighter">Tune<span className="text-primary text-glow">Mate</span></span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button className="p-2 hover:bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors">
-                        <Sliders size={20} />
-                    </button>
-                    <button className="p-2 hover:bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors relative" onClick={() => navigate('/conversations')}>
-                        <MessageCircle size={20} />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
-                    </button>
                 </div>
             </div>
 
@@ -100,14 +92,14 @@ const DiscoverPage = () => {
             <div className="flex-1 flex flex-col items-center justify-center relative w-full pt-16 pb-20 md:pb-0 px-4">
                 {/* Card Stack */}
                 <div className="w-full max-w-sm h-[600px] relative z-10">
-                    {matches.length > 0 ? (
+                    {candidates.length > 0 ? (
                         <SwipeableCard
-                            key={matches[0].user._id}
-                            user={matches[0].user}
-                            score={matches[0].score}
-                            breakdown={matches[0].breakdown}
-                            onSwipe={(dir) => handleSwipe(dir, matches[0])}
-                            nextCard={matches[1]}
+                            key={candidates[0].user._id}
+                            user={candidates[0].user}
+                            score={candidates[0].score}
+                            breakdown={candidates[0].breakdown}
+                            onSwipe={(dir) => handleSwipe(dir, candidates[0])}
+                            nextCard={candidates[1]}
                         />
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 border border-white/10 rounded-3xl bg-bg-card">
@@ -115,7 +107,7 @@ const DiscoverPage = () => {
                             <h2 className="text-2xl font-bold font-display mb-2">You've seen everyone!</h2>
                             <p className="text-gray-400 mb-6">Expand your distance or age settings to find more music lovers.</p>
                             <button
-                                onClick={fetchMatches}
+                                onClick={fetchCandidates}
                                 className="px-8 py-3 bg-primary text-bg-dark font-bold rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.3)] hover:scale-105 transition-all"
                             >
                                 Refresh Radar
@@ -125,7 +117,7 @@ const DiscoverPage = () => {
                 </div>
 
                 {/* Bottom Action Bar */}
-                {matches.length > 0 && (
+                {candidates.length > 0 && (
                     <div className="mt-8 flex items-center justify-center gap-6 z-20">
                         {/* PASS Button */}
                         <button
@@ -137,7 +129,7 @@ const DiscoverPage = () => {
 
                         {/* INFO Button */}
                         <button
-                            onClick={() => navigate(`/profile/${matches[0].user._id}`)}
+                            onClick={() => navigate(`/profile/${candidates[0].user._id}`)}
                             className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-all bg-bg-card"
                         >
                             <Info size={20} />
