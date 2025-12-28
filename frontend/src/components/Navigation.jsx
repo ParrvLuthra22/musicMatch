@@ -20,13 +20,13 @@ const Navigation = () => {
     }
 
     return (
-        <nav className="hidden md:flex flex-col w-64 h-screen bg-gray-900 border-r border-gray-800 fixed left-0 top-0 p-6 z-50">
-            <div className="flex items-center gap-3 mb-10 px-2">
-                <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-2 rounded-lg">
-                    <Music className="text-white" size={24} />
+        <nav className="hidden md:flex flex-col w-64 h-screen bg-brand-black border-r border-white/10 fixed left-0 top-0 p-6 z-50">
+            <div className="flex items-center gap-3 mb-12 px-2">
+                <div className="p-2">
+                    <Music className="text-brand-cyan glow-cyan-sm" size={32} />
                 </div>
-                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
-                    TuneMate
+                <h1 className="text-2xl font-bold text-white tracking-tighter">
+                    Tune<span className="text-brand-cyan">Mate</span>
                 </h1>
             </div>
 
@@ -39,21 +39,21 @@ const Navigation = () => {
             </div>
 
             {user && (
-                <div className="pt-6 border-t border-gray-800">
-                    <div className="flex items-center gap-3 px-4 py-3 mb-4 bg-gray-800/50 rounded-xl">
+                <div className="pt-6 border-t border-white/10">
+                    <div className="flex items-center gap-3 px-4 py-3 mb-4 bg-brand-surface rounded-xl border border-white/5">
                         <img
                             src={user.photos?.[0] || 'https://via.placeholder.com/40'}
                             alt={user.name}
-                            className="w-10 h-10 rounded-full object-cover border-2 border-purple-500"
+                            className="w-10 h-10 rounded-full object-cover border-2 border-brand-cyan"
                         />
                         <div className="flex-1 min-w-0">
                             <p className="font-medium text-white truncate">{user.name}</p>
-                            <p className="text-xs text-gray-400 truncate">Premium Member</p>
+                            <p className="text-xs text-gray-400 truncate">Premium</p>
                         </div>
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all duration-200"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
                     >
                         <LogOut size={20} />
                         <span className="font-medium">Sign Out</span>
@@ -67,15 +67,15 @@ const Navigation = () => {
 const NavLink = ({ to, icon, label, active }) => (
     <Link
         to={to}
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${active
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
-                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group border ${active
+            ? 'bg-brand-surface border-brand-cyan/30 text-brand-cyan shadow-[0_0_15px_rgba(0,240,255,0.1)]'
+            : 'border-transparent text-gray-500 hover:text-white hover:bg-white/5'
             }`}
     >
-        <span className={`${active ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+        <span className={`${active ? 'text-brand-cyan' : 'text-gray-500 group-hover:text-white'}`}>
             {icon}
         </span>
-        <span className="font-medium">{label}</span>
+        <span className="font-medium tracking-wide">{label}</span>
     </Link>
 );
 
