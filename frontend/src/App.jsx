@@ -12,23 +12,25 @@ import RegisterPage from './pages/RegisterPage';
 import DiscoverPage from './pages/DiscoverPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
+import DashboardPage from './pages/DashboardPage';
 import EventsPage from './pages/EventsPage';
 import ConversationsPage from './pages/ConversationsPage';
 import ChatPage from './pages/ChatPage';
+
+import MobileTopHeader from './components/MobileTopHeader';
 
 function App() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
 
   const hideNavigationPaths = ['/login', '/register', '/landing', '/'];
-  // Show sidebar if user is logged in OR if we are NOT on a hidden path
-  // Wait, the logic in Navigation was: if (hidePaths.includes(path) && !user) return null;
-  // This means: if I am on a hidden path AND I am NOT logged in -> HIDDEN.
-  // Otherwise (on hidden path AND logged in, OR on non-hidden path) -> SHOWN.
   const showNetwork = !(hideNavigationPaths.includes(location.pathname) && !user);
 
   return (
-    <div className={`min-h-screen bg-black text-white pb-16 md:pb-0 ${showNetwork ? 'md:pl-64' : ''}`}>
+    <div className={`min-h-screen bg-black text-white pb-20 md:pb-0 ${showNetwork ? 'md:pl-64' : ''}`}>
+      {/* Mobile Top Header - Only show if logged in and not on hidden paths */}
+      {showNetwork && <MobileTopHeader />}
+
       <Routes>
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
@@ -76,7 +78,11 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<div>Not Found</div>} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        import NotFoundPage from './pages/NotFoundPage';
+
+        // ... (inside Routes)
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Navigation />
       <BottomNav />

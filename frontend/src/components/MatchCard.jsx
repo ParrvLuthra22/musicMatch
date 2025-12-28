@@ -27,7 +27,7 @@ const MatchCard = ({ user, score, breakdown, onSwipe }) => {
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
-            className="absolute w-full max-w-sm h-[600px] bg-brand-surface rounded-3xl shadow-2xl overflow-hidden border border-white/10 cursor-grab active:cursor-grabbing"
+            className="absolute w-full max-w-sm h-[600px] bg-bg-card rounded-3xl shadow-2xl overflow-hidden border border-white/10 cursor-grab active:cursor-grabbing"
         >
             {/* Image Section */}
             <div className="h-1/2 relative bg-brand-surface-light">
@@ -58,7 +58,7 @@ const MatchCard = ({ user, score, breakdown, onSwipe }) => {
             </div>
 
             {/* Details Section */}
-            <div className="p-6 space-y-5 h-1/2 overflow-y-auto bg-brand-surface">
+            <div className="p-6 space-y-5 h-1/2 overflow-y-auto bg-bg-card">
                 {/* Breakdown Badges */}
                 <div className="flex flex-wrap gap-2">
                     {breakdown.sharedArtists.length > 0 && (

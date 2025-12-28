@@ -1,80 +1,116 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
-import { MessageCircle } from 'lucide-react';
+import MatchPlaylistCard from '../components/MatchPlaylistCard';
+import { Search, SlidersHorizontal } from 'lucide-react';
+import Input from '../components/ui/Input';
 
 const ConversationsPage = () => {
+    const [matches, setMatches] = useState([]);
     const [conversations, setConversations] = useState([]);
-    const { user } = useContext(AuthContext);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const { user: currentUser } = useContext(AuthContext);
 
     useEffect(() => {
-        const fetchConversations = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
                 const token = localStorage.getItem('token');
-                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/conversations`, {
+
+                // Fetch Matches
+                const matchesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/matches`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setConversations(data);
+
+                // Fetch Conversations
+                const conversationsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/conversations`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                setMatches(matchesRes.data);
+                setConversations(conversationsRes.data);
             } catch (error) {
-                console.error('Error fetching conversations:', error);
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchConversations();
+        fetchData();
     }, []);
 
-    const getOtherParticipant = (participants) => {
-        return participants.find(p => p._id !== user._id) || participants[0];
+    // Helper to find conversation for a match
+    const getConversationForMatch = (matchUserId) => {
+        return conversations.find(c =>
+            c.participants.some(p => (p._id || p) === matchUserId)
+        );
     };
 
+    // Filter matches
+    const filteredMatches = matches.filter(match =>
+        match.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
-        <div className="min-h-screen bg-black text-white p-6 pb-24">
-            <h1 className="text-3xl font-bold mb-8">Messages</h1>
+        <div className="min-h-screen bg-bg-dark text-white p-6 pb-24 md:pl-[17rem] font-body selection:bg-primary selection:text-black">
 
-            <div className="space-y-4">
-                {conversations.length > 0 ? (
-                    conversations.map(conv => {
-                        const otherUser = getOtherParticipant(conv.participants);
-                        return (
-                            <Link
-                                to={`/chat/${conv._id}`}
-                                key={conv._id}
-                                className="flex items-center gap-4 p-4 bg-gray-900 rounded-xl hover:bg-gray-800 transition-colors"
-                            >
-                                <div className="relative">
-                                    {otherUser.photos && otherUser.photos[0] ? (
-                                        <img
-                                            src={otherUser.photos[0]}
-                                            alt={otherUser.name}
-                                            className="w-16 h-16 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center">
-                                            <span className="text-xl font-bold">{otherUser.name[0]}</span>
-                                        </div>
-                                    )}
-                                    {/* Online status indicator could go here */}
-                                </div>
+            {/* Header */}
+            <div className="max-w-7xl mx-auto mb-8 space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-bold font-display tracking-tight text-white mb-1">Your Matches</h1>
+                        <p className="text-gray-400">People who vibe on your frequency.</p>
+                    </div>
+                </div>
 
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-semibold text-lg truncate">{otherUser.name}</h3>
-                                    <p className={`text-sm truncate ${conv.lastMessage?.read ? 'text-gray-500' : 'text-white font-medium'}`}>
-                                        {conv.lastMessage?.sender === user._id ? 'You: ' : ''}
-                                        {conv.lastMessage?.content || 'Start chatting!'}
-                                    </p>
-                                </div>
+                {/* Search & Filters */}
+                <div className="flex gap-4">
+                    <div className="relative flex-1 max-w-md">
+                        <Search className="absolute left-3 top-3.5 text-gray-500" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search matches..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full h-12 bg-bg-card border border-white/5 rounded-xl pl-10 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                        />
+                    </div>
+                    {/* Use a stylized filter button */}
+                    <button className="h-12 w-12 flex items-center justify-center bg-bg-card border border-white/5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                        <SlidersHorizontal size={20} />
+                    </button>
+                </div>
+            </div>
 
-                                <div className="text-xs text-gray-500 whitespace-nowrap">
-                                    {conv.lastMessage?.timestamp ? new Date(conv.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                                </div>
-                            </Link>
-                        );
-                    })
+            {/* Content Grid */}
+            <div className="max-w-7xl mx-auto">
+                {loading ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                    </div>
+                ) : filteredMatches.length > 0 ? (
+                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {filteredMatches.map(match => (
+                            <MatchPlaylistCard
+                                key={match._id}
+                                match={match}
+                                conversation={getConversationForMatch(match.user._id)}
+                            />
+                        ))}
+                    </div>
                 ) : (
-                    <div className="text-center text-gray-500 mt-12">
-                        <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
-                        <p>No conversations yet.</p>
-                        <p className="text-sm">Match with people to start chatting!</p>
+                    <div className="flex flex-col items-center justify-center h-64 text-center border-2 border-dashed border-white/5 rounded-3xl bg-bg-card/30">
+                        {searchQuery ? (
+                            <p className="text-gray-500">No matches found for "{searchQuery}"</p>
+                        ) : (
+                            <>
+                                <p className="text-xl font-bold text-gray-300 mb-2">No matches yet</p>
+                                <p className="text-gray-500 mb-6">Start swiping to build your playlist of people!</p>
+                                <a href="/discover" className="bg-primary text-black px-6 py-2 rounded-lg font-bold hover:bg-primary-hover transition-colors">
+                                    Go to Discover
+                                </a>
+                            </>
+                        )}
                     </div>
                 )}
             </div>

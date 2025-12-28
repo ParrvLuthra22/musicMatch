@@ -6,7 +6,6 @@ const {
 } = require('../controllers/matchController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.get('/', protect, getDiscoveryMatches);
 router.get('/', protect, require('../controllers/matchController').getMatches);
 router.get('/discover', protect, getDiscoveryMatches);
 router.post('/action', protect, handleMatchAction);
