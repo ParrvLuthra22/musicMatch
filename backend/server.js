@@ -69,8 +69,10 @@ app.use('/api/playlists', require('./routes/playlistRoutes'));
 app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
+const path = require('path');
+
 // Serve static uploads
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database Connection
 const connectDB = async () => {

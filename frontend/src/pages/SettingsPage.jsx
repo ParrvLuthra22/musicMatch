@@ -148,7 +148,11 @@ const SettingsPage = () => {
                                     </div>
                                 </div>
                             </div>
-                            <Button size="sm" variant={account.spotifyConnected ? 'outline' : 'primary'}>
+                            <Button
+                                size="sm"
+                                variant={account.spotifyConnected ? 'outline' : 'primary'}
+                                onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/spotify`}
+                            >
                                 {account.spotifyConnected ? 'Reconnect' : 'Connect'}
                             </Button>
                         </div>
@@ -206,8 +210,8 @@ const SettingsPage = () => {
                                         key={gender}
                                         onClick={() => setDiscovery({ ...discovery, genderPreference: gender.toLowerCase() })}
                                         className={`py-2 px-4 rounded-lg font-medium text-sm transition-all border ${discovery.genderPreference === gender.toLowerCase()
-                                                ? 'bg-primary text-black border-primary'
-                                                : 'bg-bg-surface text-gray-400 border-white/10 hover:border-white/30'
+                                            ? 'bg-primary text-black border-primary'
+                                            : 'bg-bg-surface text-gray-400 border-white/10 hover:border-white/30'
                                             }`}
                                     >
                                         {gender}
