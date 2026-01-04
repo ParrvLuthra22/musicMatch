@@ -28,9 +28,27 @@ const upload = multer({
     }
 }).single('photo');
 
+const { syncSpotifyData } = require('../services/spotifyService');
+
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-passwordHash');
+        let user = await User.findById(req.user._id).select('-passwordHash');
+
+        // Auto-sync if data is missing or older than 24 hours (roughly, using updated request)
+        // Or simply force sync if it's the own user requesting it to ensure fresh data as requested
+        // The user said "implement top artist... use whatever means", implies forcing it to show up.
+        // Let's force sync if topArtists is empty, otherwise just return what we have (to be fast).
+        // Actually, let's sync if it's been a while? For now, let's sync if empty.
+
+        if (!user.topArtists || user.topArtists.length === 0) {
+            try {
+                user = await syncSpotifyData(user._id);
+            } catch (syncError) {
+                console.error("Auto-sync failed:", syncError);
+                // Continue with existing user data if sync fails
+            }
+        }
+
         res.json(user);
     } catch (error) {
         console.error(error);
