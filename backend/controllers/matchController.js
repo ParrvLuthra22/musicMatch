@@ -98,7 +98,8 @@ const getMatches = async (req, res) => {
 
         // Format response to return the OTHER user in the match
         const formattedMatches = matches.map(match => {
-            const otherUser = match.users.find(u => u._id.toString() !== req.user.id);
+            const otherUser = match.users.find(u => u && u._id.toString() !== req.user.id);
+            if (!otherUser) return null;
             return {
                 _id: match._id,
                 user: otherUser,
@@ -106,7 +107,7 @@ const getMatches = async (req, res) => {
                 breakdown: match.breakdown,
                 createdAt: match.createdAt
             };
-        });
+        }).filter(match => match !== null);
 
         res.json(formattedMatches);
     } catch (error) {
