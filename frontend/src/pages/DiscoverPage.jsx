@@ -19,7 +19,7 @@ const DiscoverPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/match/discover`, {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/matches/discover`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCandidates(data);
