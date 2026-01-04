@@ -1,6 +1,6 @@
 
-import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -10,10 +10,26 @@ import { Music, ArrowRight, Disc } from 'lucide-react';
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useContext(AuthContext);
+    const { login, setToken } = useContext(AuthContext);
     const navigate = useNavigate();
+    const location = useLocation(); // START: Added useLocation
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // START: Added useEffect for token handling
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        const errorParam = params.get('error');
+
+        if (token) {
+            setToken(token);
+            navigate('/discover');
+        } else if (errorParam) {
+            setError('Spotify authentication failed. Please try again.');
+        }
+    }, [location, setToken, navigate]);
+    // END: Added useEffect for token handling
 
     const handleSubmit = async (e) => {
         e.preventDefault();
