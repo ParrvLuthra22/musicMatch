@@ -16,6 +16,7 @@ import DashboardPage from './pages/DashboardPage';
 import EventsPage from './pages/EventsPage';
 import ConversationsPage from './pages/ConversationsPage';
 import ChatPage from './pages/ChatPage';
+import MatchesPage from './pages/MatchesPage';
 
 import MobileTopHeader from './components/MobileTopHeader';
 import NotFoundPage from './pages/NotFoundPage';
@@ -80,6 +81,7 @@ function App() {
           }
         />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/matches" element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Navigation />
